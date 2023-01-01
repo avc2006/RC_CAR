@@ -1,0 +1,19 @@
+#include <SoftwareSerial.h>
+int blueTX = 4;
+int blueRx = 7;
+SoftwareSerial mySerial(blueTX,blueRx);
+
+void setup() {
+  Serial.begin(9600);
+  mySerial.begin(38400);
+
+}
+
+void loop() {
+  if(mySerial.available()){
+    Serial.write(mySerial.read());
+  }
+  if(Serial.available()){
+    mySerial.write(Serial.read());
+  }
+}

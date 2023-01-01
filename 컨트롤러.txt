@@ -1,0 +1,40 @@
+#include <SoftwareSerial.h>
+
+const int analogInPin0 = A0;
+const int analogInPin1 = A1;
+int blueTX = 4;
+int blueRx = 7;
+int sensorValue1 = 0;
+int sensorValue2 = 0;
+int outputValue1 = 0;
+int outputValue2 = 0;
+unsigned long preMil = 0;
+SoftwareSerial mySerial(blueTX,blueRx);
+
+void setup() {
+  Serial.begin(9600);
+  mySerial.begin(38400);
+}
+
+void loop() {
+  unsigned long curMil = millis();
+  sensorValue1 = analogRead(analogInPin0);
+  sensorValue2 = analogRead(analogInPin1);
+  outputValue1 = map(sensorValue1, 0, 1023, 0, 255);
+  outputValue2 = map(sensorValue2, 0, 1023, 0, 255);
+  
+  byte wbuf[4] = {0xFF, 0x01, 0x02, 0x03};
+  
+  wbuf[2] = outputValue1;
+  wbuf[3] = outputValue2;
+  if(curMil - preMil > 50){
+    preMil = curMil;
+    mySerial.print("#SERVO,");
+    mySerial.print(outputValue1);
+    mySerial.print("@");
+    
+    mySerial.print("#PWM,");
+    mySerial.print(outputValue2);
+    mySerial.print("@");
+  }
+}
